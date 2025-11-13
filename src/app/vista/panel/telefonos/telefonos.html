@@ -1,1 +1,93 @@
-<p>telefonos works!</p>
+<div class="telefonos-page">
+  <h2>Teléfonos</h2>
+
+  <!-- Buscador -->
+  <div class="search-row">
+    <div class="search-input">
+      <input
+        type="text"
+        placeholder="Buscar por número..."
+        [(ngModel)]="busqueda"
+        (keyup.enter)="aplicarFiltro()"
+      />
+    </div>
+    <button type="button" class="btn" (click)="aplicarFiltro()">Buscar</button>
+    <button
+      type="button"
+      class="btn btn-secondary"
+      *ngIf="busqueda"
+      (click)="limpiarFiltro()"
+    >
+      Limpiar
+    </button>
+  </div>
+
+  <!-- Tabla -->
+  <div class="table-card" *ngIf="!cargando; else loadingTpl">
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 90px">ID</th>
+          <th>Número</th>
+          <th style="width: 120px">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let t of telefonosFiltrados">
+          <td>{{ t.idTelefono }}</td>
+          <td>{{ t.numero }}</td>
+          <td class="acciones">
+            <button type="button" class="icon-btn" (click)="editar(t)">✏️</button>
+            <button
+              type="button"
+              class="icon-btn delete"
+              (click)="eliminar(t)"
+            >
+              🗑️
+            </button>
+          </td>
+        </tr>
+        <tr *ngIf="telefonosFiltrados.length === 0">
+          <td colspan="3" class="no-data">No hay teléfonos registrados.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <ng-template #loadingTpl>
+    <p>Cargando teléfonos...</p>
+  </ng-template>
+
+  <!-- Formulario -->
+  <div class="form-card">
+    <h3>{{ modoEdicion ? 'Editar teléfono' : 'Crear nuevo teléfono' }}</h3>
+
+    <form (ngSubmit)="guardarTelefono()">
+      <label for="numero">Número</label>
+      <input
+        id="numero"
+        name="numeroTelefono"
+        type="text"
+        [(ngModel)]="numeroTelefono"
+        required
+        placeholder="Ej: 3001234567"
+      />
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">
+          {{ modoEdicion ? 'Actualizar' : 'Crear' }}
+        </button>
+        <button
+          *ngIf="modoEdicion"
+          type="button"
+          class="btn btn-secondary"
+          (click)="cancelar()"
+        >
+          Cancelar
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <p class="error" *ngIf="mensajeError">{{ mensajeError }}</p>
+</div>

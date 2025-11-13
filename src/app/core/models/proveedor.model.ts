@@ -6,7 +6,7 @@ export interface Proveedor {
   ciudad: Ciudad;
   direccion: string;
   email: string;
-  estado: string | boolean;
+  estado: boolean;
   telefonos: string[];
 }
 
@@ -15,6 +15,6 @@ export interface ProveedorRequest {
   idCiudad: number;
   direccion: string;
   email: string;
-  estado: string | boolean;
+  estado: boolean;
   telefonos: string[];
 }

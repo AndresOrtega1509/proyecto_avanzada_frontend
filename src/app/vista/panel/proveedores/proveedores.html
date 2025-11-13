@@ -30,6 +30,7 @@
           <th style="width: 70px">ID</th>
           <th>Nombre</th>
           <th>Ciudad</th>
+          <th>Dirección</th>
           <th>Email</th>
           <th>Estado</th>
           <th>Teléfonos</th>
@@ -41,8 +42,9 @@
           <td>{{ p.idProveedor }}</td>
           <td>{{ p.nombre }}</td>
           <td>{{ p.ciudad.nombre }}</td>
+          <td>{{ p.direccion }}</td>
           <td>{{ p.email }}</td>
-          <td>{{ p.estado }}</td>
+          <td>{{ p.estado ? 'ACTIVO' : 'INACTIVO' }}</td>
           <td>
             <span class="tag" *ngFor="let tel of p.telefonos">
               {{ tel }}
@@ -60,7 +62,7 @@
           </td>
         </tr>
         <tr *ngIf="proveedoresFiltrados.length === 0">
-          <td colspan="7" class="no-data">No hay proveedores registrados.</td>
+          <td colspan="8" class="no-data">No hay proveedores registrados.</td>
         </tr>
       </tbody>
     </table>
@@ -137,8 +139,8 @@
           </select>
         </div>
 
-        <!-- Teléfonos -->
-        <div class="form-group form-telefonos">
+        <!-- Teléfonos al CREAR (editable) -->
+        <div class="form-group form-telefonos" *ngIf="!modoEdicion">
           <label>Teléfonos</label>
           <div class="telefono-input">
             <input
@@ -147,7 +149,11 @@
               [(ngModel)]="form.telefonoActual"
               placeholder="Agregar teléfono..."
             />
-            <button type="button" class="btn btn-small" (click)="agregarTelefono()">
+            <button
+              type="button"
+              class="btn btn-small"
+              (click)="agregarTelefono()"
+            >
               +
             </button>
           </div>
@@ -160,6 +166,23 @@
               <button type="button" (click)="eliminarTelefono(i)">x</button>
             </span>
           </div>
+          <p class="hint" *ngIf="form.telefonos.length === 0">
+            Debe agregar al menos un teléfono para crear el proveedor.
+          </p>
+        </div>
+
+        <!-- Teléfonos en EDICIÓN (solo lectura) -->
+        <div class="form-group" *ngIf="modoEdicion">
+          <label>Teléfonos asociados</label>
+          <div class="telefonos-list">
+            <span class="tag" *ngFor="let tel of telefonosAsociados">
+              {{ tel }}
+            </span>
+          </div>
+          <p class="hint" *ngIf="telefonosAsociados.length === 0">
+            Este proveedor aún no tiene teléfonos asociados. Puedes gestionarlos
+            desde el módulo <strong>Proveedor teléfonos</strong>.
+          </p>
         </div>
       </div>
 

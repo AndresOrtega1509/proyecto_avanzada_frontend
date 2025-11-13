@@ -2,11 +2,11 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { UnidadMedida } from '../models/unidad-medida.model';
+import { Telefono } from '../models/telefono.model';
 
 @Injectable({ providedIn: 'root' })
-export class UnidadesMedidaService {
-  private baseUrl = `${environment.apiUrl}/api/unidades-medida`;
+export class TelefonosService {
+  private baseUrl = `${environment.apiUrl}/api/telefonos`;
 
   constructor(private http: HttpClient) {}
 
@@ -19,29 +19,25 @@ export class UnidadesMedidaService {
     return headers;
   }
 
-  // LISTAR
-  getUnidadesMedida(): Observable<UnidadMedida[]> {
-    return this.http.get<UnidadMedida[]>(this.baseUrl, {
+  getTelefonos(): Observable<Telefono[]> {
+    return this.http.get<Telefono[]>(this.baseUrl, {
       headers: this.getAuthHeaders(),
     });
   }
 
-  // CREAR
-  createUnidadMedida(data: UnidadMedida): Observable<UnidadMedida> {
-    return this.http.post<UnidadMedida>(this.baseUrl, data, {
+  createTelefono(data: { numero: string }): Observable<Telefono> {
+    return this.http.post<Telefono>(this.baseUrl, data, {
       headers: this.getAuthHeaders(),
     });
   }
 
-  // ACTUALIZAR
-  updateUnidadMedida(id: number, data: UnidadMedida): Observable<UnidadMedida> {
-    return this.http.put<UnidadMedida>(`${this.baseUrl}/${id}`, data, {
+  updateTelefono(id: number, data: { numero: string }): Observable<Telefono> {
+    return this.http.put<Telefono>(`${this.baseUrl}/${id}`, data, {
       headers: this.getAuthHeaders(),
     });
   }
 
-  // ELIMINAR
-  deleteUnidadMedida(id: number): Observable<void> {
+  deleteTelefono(id: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${id}`, {
       headers: this.getAuthHeaders(),
     });

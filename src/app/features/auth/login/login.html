@@ -1,34 +1,68 @@
-<div class="login-container">
-  <div class="login-card">
-    <h2 class="title">Iniciar sesión</h2>
+<div class="login-page">
+  <div class="login-illustration">
+    <div class="brand">
+      <div class="brand-logo">🛒</div>
+      <div class="brand-text">
+        <h1>NextBuy</h1>
+        <p>Sistema de compras y proveedores</p>
+      </div>
+    </div>
 
-    <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
+    <ul class="highlights">
+      <li>✔ Gestión de productos y proveedores</li>
+      <li>✔ Control de compras y detalle de compras</li>
+      <li>✔ Panel intuitivo y seguro</li>
+    </ul>
+  </div>
+
+  <div class="login-card">
+    <h2>Iniciar sesión</h2>
+    <p class="subtitle">Accede al panel de administración</p>
+
+    <form (ngSubmit)="onSubmit()">
       <div class="form-group">
         <label for="email">Correo electrónico</label>
         <input
-          type="email"
           id="email"
           name="email"
-          [(ngModel)]="username"
-          required
+          type="email"
+          [(ngModel)]="form.email"
           placeholder="Ingrese su correo"
+          autocomplete="email"
+          [disabled]="loading"
         />
       </div>
 
       <div class="form-group">
         <label for="password">Contraseña</label>
         <input
-          type="password"
           id="password"
           name="password"
-          [(ngModel)]="password"
-          required
+          type="password"
+          [(ngModel)]="form.password"
           placeholder="Ingrese su contraseña"
+          autocomplete="current-password"
+          [disabled]="loading"
         />
       </div>
 
-      <button type="submit" [disabled]="loginForm.invalid" class="btn-login">
-        Iniciar sesión
+      <div class="messages">
+        <p class="info" *ngIf="loading || infoMessage">
+          <span class="spinner" *ngIf="loading"></span>
+          {{ infoMessage || 'Conectando con el servidor...' }}
+        </p>
+        <p class="error" *ngIf="errorMessage">
+          {{ errorMessage }}
+        </p>
+      </div>
+
+      <button
+        type="submit"
+        class="btn-primary"
+        [disabled]="loading"
+      >
+        <span *ngIf="!loading">Iniciar sesión</span>
+        <span *ngIf="loading">Iniciando sesión...</span>
       </button>
     </form>
   </div>

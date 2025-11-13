@@ -27,14 +27,17 @@ export class ProveedoresComponent implements OnInit {
   modoEdicion = false;
   proveedorSeleccionado: Proveedor | null = null;
 
+  // Teléfonos asociados (solo lectura en modo edición)
+  telefonosAsociados: string[] = [];
+
   form: {
     nombre: string;
     idCiudad: number | null;
     direccion: string;
     email: string;
     estado: 'ACTIVO' | 'INACTIVO';
-    telefonos: string[];
-    telefonoActual: string;
+    telefonos: string[]; // teléfonos que el usuario agrega al crear
+    telefonoActual: string; // input actual
   } = this.getFormInicial();
 
   constructor(
@@ -104,6 +107,7 @@ export class ProveedoresComponent implements OnInit {
     this.modoEdicion = false;
     this.proveedorSeleccionado = null;
     this.form = this.getFormInicial();
+    this.telefonosAsociados = [];
   }
 
   editar(proveedor: Proveedor): void {
@@ -115,17 +119,23 @@ export class ProveedoresComponent implements OnInit {
       idCiudad: proveedor.ciudad?.idCiudad ?? null,
       direccion: proveedor.direccion ?? '',
       email: proveedor.email ?? '',
-      estado: (proveedor.estado as 'ACTIVO' | 'INACTIVO') ?? 'ACTIVO',
-      telefonos: proveedor.telefonos ? [...proveedor.telefonos] : [],
+      estado: proveedor.estado ? 'ACTIVO' : 'INACTIVO',
+      telefonos: [], // en edición ya no se usan para enviar cambios
       telefonoActual: '',
     };
+
+    // Teléfonos que ya tiene el proveedor (solo lectura en el form)
+    this.telefonosAsociados = proveedor.telefonos ? [...proveedor.telefonos] : [];
   }
 
   cancelarEdicion(): void {
     this.nuevoProveedor();
   }
 
+  // Solo para crear (en modo edición no hacemos nada)
   agregarTelefono(): void {
+    if (this.modoEdicion) return;
+
     const tel = this.form.telefonoActual.trim();
     if (!tel) return;
 
@@ -136,6 +146,7 @@ export class ProveedoresComponent implements OnInit {
   }
 
   eliminarTelefono(index: number): void {
+    if (this.modoEdicion) return;
     this.form.telefonos.splice(index, 1);
   }
 
@@ -145,15 +156,30 @@ export class ProveedoresComponent implements OnInit {
       return;
     }
 
+    // Si estamos CREANDO, debe haber al menos un teléfono
+    if (!this.modoEdicion && this.form.telefonos.length === 0) {
+      this.mensajeError = 'Debe agregar al menos un teléfono para el proveedor.';
+      return;
+    }
+
     this.mensajeError = '';
+
+    const estadoBoolean = this.form.estado === 'ACTIVO';
+
+    // Teléfonos que vamos a enviar al back:
+    // - En create: los que el usuario escribió en el formulario.
+    // - En update: los que ya están asociados (solo lectura).
+    const telefonosReq: string[] = this.modoEdicion
+      ? this.telefonosAsociados ?? []
+      : this.form.telefonos;
 
     const req: ProveedorRequest = {
       nombre: this.form.nombre.trim(),
       idCiudad: this.form.idCiudad!,
       direccion: this.form.direccion.trim(),
       email: this.form.email.trim(),
-      estado: this.form.estado,
-      telefonos: this.form.telefonos,
+      estado: estadoBoolean,
+      telefonos: telefonosReq,
     };
 
     if (this.modoEdicion && this.proveedorSeleccionado?.idProveedor != null) {

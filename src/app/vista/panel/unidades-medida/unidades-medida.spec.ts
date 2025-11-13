@@ -1,18 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { UnidadesMedida } from './unidades-medida';
+import { UnidadMedidaComponent } from './unidades-medida';
 
 describe('UnidadesMedida', () => {
-  let component: UnidadesMedida;
-  let fixture: ComponentFixture<UnidadesMedida>;
+  let component: UnidadMedidaComponent;
+  let fixture: ComponentFixture<UnidadMedidaComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [UnidadesMedida]
-    })
-    .compileComponents();
+      imports: [UnidadMedidaComponent],
+    }).compileComponents();
 
-    fixture = TestBed.createComponent(UnidadesMedida);
+    fixture = TestBed.createComponent(UnidadMedidaComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

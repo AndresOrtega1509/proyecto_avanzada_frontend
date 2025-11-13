@@ -1,1 +1,101 @@
-<p>unidades-medida works!</p>
+<div class="unidades-page">
+  <h2>Unidades de medida</h2>
+
+  <!-- Buscador -->
+  <div class="search-row">
+    <div class="search-input">
+      <input
+        type="text"
+        placeholder="Buscar por nombre..."
+        [(ngModel)]="busqueda"
+        (keyup.enter)="aplicarFiltro()"
+      />
+    </div>
+    <button type="button" class="btn" (click)="aplicarFiltro()">Buscar</button>
+    <button
+      type="button"
+      class="btn btn-secondary"
+      *ngIf="busqueda"
+      (click)="limpiarFiltro()"
+    >
+      Limpiar
+    </button>
+  </div>
+
+  <!-- Tabla -->
+  <div class="table-card" *ngIf="!cargando; else loadingTpl">
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 80px">ID</th>
+          <th>Nombre</th>
+          <th style="width: 120px">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let u of unidadesFiltradas">
+          <td>{{ u.idUnidadMedida }}</td>
+          <td>{{ u.nombre }}</td>
+          <td class="acciones">
+            <button type="button" class="icon-btn" (click)="editar(u)">✏️</button>
+            <button
+              type="button"
+              class="icon-btn delete"
+              (click)="eliminar(u)"
+            >
+              🗑️
+            </button>
+          </td>
+        </tr>
+        <tr *ngIf="unidadesFiltradas.length === 0">
+          <td colspan="3" class="no-data">
+            No hay unidades de medida registradas.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <ng-template #loadingTpl>
+    <p>Cargando unidades de medida...</p>
+  </ng-template>
+
+  <!-- Formulario -->
+  <div class="form-card">
+    <h3>
+      {{ modoEdicion ? 'Editar unidad de medida' : 'Crear nueva unidad de medida' }}
+    </h3>
+
+    <form (ngSubmit)="guardar()">
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="nombre">Nombre</label>
+          <input
+            id="nombre"
+            name="nombre"
+            type="text"
+            [(ngModel)]="form.nombre"
+            required
+            minlength="2"
+          />
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">
+          {{ modoEdicion ? 'Actualizar' : 'Crear' }}
+        </button>
+        <button
+          *ngIf="modoEdicion"
+          type="button"
+          class="btn btn-secondary"
+          (click)="cancelar()"
+        >
+          Cancelar
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <p class="error" *ngIf="mensajeError">{{ mensajeError }}</p>
+</div>

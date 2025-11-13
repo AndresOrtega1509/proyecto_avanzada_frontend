@@ -11,6 +11,9 @@ import { DetalleComprasComponent } from './vista/panel/detalle-compras/detalle-c
 import { MarcasComponent } from './vista/panel/marcas/marcas';
 import { RolesComponent } from './vista/panel/roles/roles';
 import { UsuariosComponent } from './vista/panel/usuarios/usuarios';
+import { ProveedorTelefonosComponent } from './vista/panel/proveedor-telefonos/proveedor-telefonos';
+import { TelefonosComponent } from './vista/panel/telefonos/telefonos';
+import { UnidadMedidaComponent } from './vista/panel/unidades-medida/unidades-medida';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -31,6 +34,9 @@ export const routes: Routes = [
       { path: 'marcas', component: MarcasComponent },
       { path: 'roles', component: RolesComponent },
       { path: 'usuarios', component: UsuariosComponent },
+      { path: 'proveedor-telefonos', component: ProveedorTelefonosComponent },
+      { path: 'telefonos', component: TelefonosComponent },
+      { path: 'unidades-medida', component: UnidadMedidaComponent },
       { path: '', redirectTo: 'categorias', pathMatch: 'full' },
     ],
   },

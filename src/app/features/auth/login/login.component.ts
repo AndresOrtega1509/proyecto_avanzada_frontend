@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
-import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-login',
@@ -12,25 +12,66 @@ import { CommonModule } from '@angular/common';
   styleUrl: './login.css',
 })
 export class LoginComponent {
-  username = '';
-  password = '';
-  mensajeError = '';
+  form = {
+    email: '',
+    password: '',
+  };
+
+  loading = false;
+  errorMessage = '';
+  infoMessage = '';
 
   constructor(private authService: AuthService, private router: Router) {}
 
-  onSubmit() {
-    this.mensajeError = '';
+  onSubmit(): void {
+    this.errorMessage = '';
+    this.infoMessage = '';
 
-    this.authService.login(this.username, this.password).subscribe({
+    const email = this.form.email.trim();
+    const password = this.form.password.trim();
+
+    if (!email || !password) {
+      this.errorMessage = 'Debe ingresar correo y contraseña.';
+      return;
+    }
+
+    this.loading = true;
+    this.infoMessage =
+      'Conectando con el servidor... la primera vez puede tardar algunos segundos.';
+
+    this.authService.login(email, password).subscribe({
       next: (resp) => {
-        localStorage.setItem('token', resp.accessToken);
-        localStorage.setItem('username', this.username);
+        const token = resp.accessToken;
 
+        const usuarioNombre = email;
+
+        if (token) {
+          localStorage.setItem('token', token);
+        }
+        if (usuarioNombre) {
+          localStorage.setItem('username', usuarioNombre);
+        }
+
+        this.loading = false;
+        this.infoMessage = '';
         this.router.navigate(['/panel']);
       },
       error: (err) => {
-        console.error('Error en login', err);
-        this.mensajeError = 'Credenciales incorrectas';
+        this.loading = false;
+
+        if (err.status === 401 || err.status === 403) {
+          this.errorMessage = 'Correo o contraseña incorrectos.';
+          this.infoMessage = '';
+        } else if (err.status === 0) {
+          this.infoMessage =
+            'No se pudo contactar el servidor. Espera unos segundos y vuelve a intentar.';
+          this.errorMessage = '';
+        } else {
+          this.errorMessage = 'Ocurrió un error al iniciar sesión. Inténtalo de nuevo más tarde.';
+          this.infoMessage = '';
+        }
+
+        console.error('Error al iniciar sesión', err);
       },
     });
   }

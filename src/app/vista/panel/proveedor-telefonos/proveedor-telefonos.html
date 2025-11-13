@@ -1,1 +1,117 @@
-<p>proveedor-telefonos works!</p>
+<div class="prov-tel-page">
+  <h2>Teléfonos de proveedores</h2>
+
+  <!-- Buscador -->
+  <div class="search-row">
+    <div class="search-input">
+      <input
+        type="text"
+        placeholder="Buscar por proveedor o teléfono..."
+        [(ngModel)]="busqueda"
+        (keyup.enter)="aplicarFiltro()"
+      />
+    </div>
+    <button type="button" class="btn" (click)="aplicarFiltro()">Buscar</button>
+    <button
+      type="button"
+      class="btn btn-secondary"
+      *ngIf="busqueda"
+      (click)="limpiarFiltro()"
+    >
+      Limpiar
+    </button>
+  </div>
+
+  <!-- Tabla -->
+  <div class="table-card" *ngIf="!cargando; else loadingTpl">
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 90px">ID</th>
+          <th>Proveedor</th>
+          <th>Teléfono</th>
+          <th style="width: 120px">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr *ngFor="let r of registrosFiltrados">
+            <td>{{ r.idProveedoresTelefonos }}</td>
+            <td>{{ r.proveedor?.nombre }}</td>
+            <td>{{ r.telefono?.numero }}</td>
+            <td class="acciones">
+              <button type="button" class="icon-btn" (click)="editar(r)">✏️</button>
+              <button
+                type="button"
+                class="icon-btn delete"
+                (click)="eliminar(r)"
+              >
+                🗑️
+              </button>
+          </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <ng-template #loadingTpl>
+    <p>Cargando teléfonos...</p>
+  </ng-template>
+
+  <!-- Formulario -->
+  <div class="form-card">
+    <h3>
+      {{ modoEdicion ? 'Editar teléfono de proveedor' : 'Agregar teléfono a proveedor' }}
+    </h3>
+
+    <form (ngSubmit)="guardar()">
+      <div class="form-grid">
+  <div class="form-group">
+    <label for="proveedor">Proveedor</label>
+    <select
+      id="proveedor"
+      name="idProveedor"
+      [(ngModel)]="form.idProveedor"
+      required
+      aria-label="Proveedor"
+    >
+      <option [ngValue]="null">Seleccione...</option>
+      <option *ngFor="let p of proveedores" [ngValue]="p.idProveedor">
+        {{ p.nombre }}
+      </option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label for="telefono">Teléfono</label>
+    <select
+      id="telefono"
+      name="idTelefono"
+      [(ngModel)]="form.idTelefono"
+      required
+      aria-label="Teléfono"
+    >
+      <option [ngValue]="null">Seleccione...</option>
+      <option *ngFor="let t of telefonos" [ngValue]="t.idTelefono">
+        {{ t.numero }}
+      </option>
+    </select>
+  </div>
+</div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">
+          {{ modoEdicion ? 'Actualizar teléfono' : 'Guardar teléfono' }}
+        </button>
+        <button
+          *ngIf="modoEdicion"
+          type="button"
+          class="btn btn-secondary"
+          (click)="cancelar()"
+        >
+          Cancelar
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <p class="error" *ngIf="mensajeError">{{ mensajeError }}</p>
+</div>
