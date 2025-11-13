@@ -1,0 +1,216 @@
+<div class="productos-page">
+  <h2>Productos</h2>
+
+  <!-- Buscador -->
+  <div class="search-row">
+    <div class="search-input">
+      <input
+        type="text"
+        placeholder="Buscar por nombre..."
+        [(ngModel)]="busqueda"
+        (keyup.enter)="aplicarFiltro()"
+      />
+    </div>
+    <button type="button" class="btn" (click)="aplicarFiltro()">Buscar</button>
+    <button
+      type="button"
+      class="btn btn-secondary"
+      *ngIf="busqueda"
+      (click)="limpiarFiltro()"
+    >
+      Limpiar
+    </button>
+  </div>
+
+  <!-- Tabla -->
+  <div class="table-card" *ngIf="!cargando; else loadingTpl">
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 70px">ID</th>
+          <th>Nombre</th>
+          <th>Categoría</th>
+          <th>Marca</th>
+          <th>Precio</th>
+          <th>Stock</th>
+          <th>Estado</th>
+          <th style="width: 120px">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let p of productosFiltrados">
+          <td>{{ p.idProducto }}</td>
+          <td>{{ p.nombre }}</td>
+          <td>{{ p.categoria?.nombre }}</td>
+          <td>{{ p.marca?.nombre }}</td>
+          <td>{{ p.precio | currency: 'COP':'symbol-narrow' }}</td>
+          <td>{{ p.stock }}</td>
+          <td>{{ p.estado }}</td>
+          <td class="acciones">
+            <button type="button" class="icon-btn" (click)="editar(p)">✏️</button>
+            <button type="button" class="icon-btn delete" (click)="eliminar(p)">
+              🗑️
+            </button>
+          </td>
+        </tr>
+        <tr *ngIf="productosFiltrados.length === 0">
+          <td colspan="8" class="no-data">No hay productos registrados.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <ng-template #loadingTpl>
+    <p>Cargando productos...</p>
+  </ng-template>
+
+  <!-- Formulario crear/editar -->
+  <div class="form-card">
+    <h3>{{ modoEdicion ? 'Editar producto' : 'Crear nuevo producto' }}</h3>
+
+    <form (ngSubmit)="guardarProducto()">
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="nombre">Nombre</label>
+          <input
+            id="nombre"
+            name="nombre"
+            type="text"
+            [(ngModel)]="form.nombre"
+            required
+            minlength="3"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="categoria">Categoría</label>
+          <select
+            id="categoria"
+            name="idCategoria"
+            [(ngModel)]="form.idCategoria"
+            required
+          >
+            <option [ngValue]="null">Seleccione...</option>
+            <option *ngFor="let c of categorias" [ngValue]="c.idCategoria">
+              {{ c.nombre }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="marca">Marca</label>
+          <select
+            id="marca"
+            name="idMarca"
+            [(ngModel)]="form.idMarca"
+            required
+          >
+            <option [ngValue]="null">Seleccione...</option>
+            <option *ngFor="let m of marcas" [ngValue]="m.idMarca">
+              {{ m.nombre }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="unidad">Unidad de medida</label>
+          <select
+            id="unidad"
+            name="idUnidadMedida"
+            [(ngModel)]="form.idUnidadMedida"
+            required
+          >
+            <option [ngValue]="null">Seleccione...</option>
+            <option
+              *ngFor="let u of unidadesMedida"
+              [ngValue]="u.idUnidadMedida"
+            >
+              {{ u.nombre }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="cantidadUnidad">Cantidad por unidad</label>
+          <input
+            id="cantidadUnidad"
+            name="cantidadUnidadesMedidas"
+            type="number"
+            [(ngModel)]="form.cantidadUnidadesMedidas"
+            min="1"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="impuesto">Impuesto</label>
+          <select
+            id="impuesto"
+            name="idImpuesto"
+            [(ngModel)]="form.idImpuesto"
+            required
+          >
+            <option [ngValue]="null">Seleccione...</option>
+            <option *ngFor="let i of impuestos" [ngValue]="i.idImpuesto">
+              {{ i.nombre }} ({{ i.porcentaje }}%)
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="precio">Precio</label>
+          <input
+            id="precio"
+            name="precio"
+            type="number"
+            [(ngModel)]="form.precio"
+            min="0"
+            step="0.01"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="stock">Stock</label>
+          <input
+            id="stock"
+            name="stock"
+            type="number"
+            [(ngModel)]="form.stock"
+            min="0"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="estado">Estado</label>
+          <select
+            id="estado"
+            name="estado"
+            [(ngModel)]="form.estado"
+            required
+          >
+            <option value="ACTIVO">ACTIVO</option>
+            <option value="INACTIVO">INACTIVO</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">
+          {{ modoEdicion ? 'Actualizar' : 'Crear' }}
+        </button>
+        <button
+          *ngIf="modoEdicion"
+          type="button"
+          class="btn btn-secondary"
+          (click)="cancelarEdicion()"
+        >
+          Cancelar
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <p class="error" *ngIf="mensajeError">{{ mensajeError }}</p>
+</div>

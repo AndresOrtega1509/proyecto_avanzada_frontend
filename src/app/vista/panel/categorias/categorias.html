@@ -1,0 +1,89 @@
+<div class="categorias-page">
+  <h2>Categorías</h2>
+
+  <!-- Buscador -->
+  <div class="search-row">
+    <div class="search-input">
+      <input
+        type="text"
+        placeholder="Buscar por nombre..."
+        [(ngModel)]="busqueda"
+        (keyup.enter)="aplicarFiltro()"
+      />
+    </div>
+    <button type="button" class="btn" (click)="aplicarFiltro()">Buscar</button>
+    <button
+      type="button"
+      class="btn btn-secondary"
+      *ngIf="busqueda"
+      (click)="limpiarFiltro()"
+    >
+      Limpiar
+    </button>
+  </div>
+
+  <!-- Tabla -->
+  <div class="table-card" *ngIf="!cargando; else loadingTpl">
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 80px">ID</th>
+          <th>Nombre</th>
+          <th style="width: 120px">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let cat of categoriasFiltradas">
+          <td>{{ cat.idCategoria }}</td>
+          <td>{{ cat.nombre }}</td>
+          <td class="acciones">
+            <button type="button" class="icon-btn" (click)="editar(cat)">✏️</button>
+            <button type="button" class="icon-btn delete" (click)="eliminar(cat)">
+              🗑️
+            </button>
+          </td>
+        </tr>
+        <tr *ngIf="categoriasFiltradas.length === 0">
+          <td colspan="3" class="no-data">No hay categorías registradas.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <ng-template #loadingTpl>
+    <p>Cargando categorías...</p>
+  </ng-template>
+
+  <!-- Formulario crear/editar -->
+  <div class="form-card">
+    <h3>{{ modoEdicion ? 'Editar categoría' : 'Crear nueva categoría' }}</h3>
+
+    <form (ngSubmit)="guardarCategoria()">
+      <label for="nombre">Nombre</label>
+      <input
+        id="nombre"
+        name="nombreCategoria"
+        type="text"
+        [(ngModel)]="nombreCategoria"
+        required
+        minlength="3"
+      />
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">
+          {{ modoEdicion ? 'Actualizar' : 'Crear' }}
+        </button>
+        <button
+          *ngIf="modoEdicion"
+          type="button"
+          class="btn btn-secondary"
+          (click)="cancelarEdicion()"
+        >
+          Cancelar
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <p class="error" *ngIf="mensajeError">{{ mensajeError }}</p>
+</div>
