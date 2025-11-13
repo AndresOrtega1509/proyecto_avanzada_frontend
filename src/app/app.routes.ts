@@ -9,6 +9,8 @@ import { ImpuestosComponent } from './vista/panel/impuestos/impuestos.component'
 import { ComprasComponent } from './vista/panel/compras/compras.component';
 import { DetalleComprasComponent } from './vista/panel/detalle-compras/detalle-compras';
 import { MarcasComponent } from './vista/panel/marcas/marcas';
+import { RolesComponent } from './vista/panel/roles/roles';
+import { UsuariosComponent } from './vista/panel/usuarios/usuarios';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -27,6 +29,8 @@ export const routes: Routes = [
       { path: 'compras', component: ComprasComponent },
       { path: 'detalle-compras', component: DetalleComprasComponent },
       { path: 'marcas', component: MarcasComponent },
+      { path: 'roles', component: RolesComponent },
+      { path: 'usuarios', component: UsuariosComponent },
       { path: '', redirectTo: 'categorias', pathMatch: 'full' },
     ],
   },

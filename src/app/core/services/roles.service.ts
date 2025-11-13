@@ -2,12 +2,11 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { Usuario } from '../models/usuario.model';
-import { UsuarioRequest } from '../models/usuario-request.model';
+import { Rol } from '../models/rol.model';
 
 @Injectable({ providedIn: 'root' })
-export class UsuariosService {
-  private baseUrl = `${environment.apiUrl}/api/usuarios`;
+export class RolesService {
+  private baseUrl = `${environment.apiUrl}/api/roles`;
 
   constructor(private http: HttpClient) {}
 
@@ -20,25 +19,25 @@ export class UsuariosService {
     return headers;
   }
 
-  getUsuarios(): Observable<Usuario[]> {
-    return this.http.get<Usuario[]>(this.baseUrl, {
+  getRoles(): Observable<Rol[]> {
+    return this.http.get<Rol[]>(this.baseUrl, {
       headers: this.getAuthHeaders(),
     });
   }
 
-  createUsuario(req: UsuarioRequest): Observable<Usuario> {
-    return this.http.post<Usuario>(this.baseUrl, req, {
+  createRol(data: { nombre: string; descripcion: string }): Observable<Rol> {
+    return this.http.post<Rol>(this.baseUrl, data, {
       headers: this.getAuthHeaders(),
     });
   }
 
-  updateUsuario(id: number, req: UsuarioRequest): Observable<Usuario> {
-    return this.http.put<Usuario>(`${this.baseUrl}/${id}`, req, {
+  updateRol(id: number, data: { nombre: string; descripcion: string }): Observable<Rol> {
+    return this.http.put<Rol>(`${this.baseUrl}/${id}`, data, {
       headers: this.getAuthHeaders(),
     });
   }
 
-  deleteUsuario(id: number): Observable<void> {
+  deleteRol(id: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${id}`, {
       headers: this.getAuthHeaders(),
     });
