@@ -1,1 +1,183 @@
-<p>proveedores works!</p>
+<div class="proveedores-page">
+  <h2>Proveedores</h2>
+
+  <!-- Buscador -->
+  <div class="search-row">
+    <div class="search-input">
+      <input
+        type="text"
+        placeholder="Buscar por nombre o email..."
+        [(ngModel)]="busqueda"
+        (keyup.enter)="aplicarFiltro()"
+      />
+    </div>
+    <button type="button" class="btn" (click)="aplicarFiltro()">Buscar</button>
+    <button
+      type="button"
+      class="btn btn-secondary"
+      *ngIf="busqueda"
+      (click)="limpiarFiltro()"
+    >
+      Limpiar
+    </button>
+  </div>
+
+  <!-- Tabla -->
+  <div class="table-card" *ngIf="!cargando; else loadingTpl">
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 70px">ID</th>
+          <th>Nombre</th>
+          <th>Ciudad</th>
+          <th>Email</th>
+          <th>Estado</th>
+          <th>Teléfonos</th>
+          <th style="width: 120px">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let p of proveedoresFiltrados">
+          <td>{{ p.idProveedor }}</td>
+          <td>{{ p.nombre }}</td>
+          <td>{{ p.ciudad.nombre }}</td>
+          <td>{{ p.email }}</td>
+          <td>{{ p.estado }}</td>
+          <td>
+            <span class="tag" *ngFor="let tel of p.telefonos">
+              {{ tel }}
+            </span>
+          </td>
+          <td class="acciones">
+            <button type="button" class="icon-btn" (click)="editar(p)">✏️</button>
+            <button
+              type="button"
+              class="icon-btn delete"
+              (click)="eliminarProveedor(p)"
+            >
+              🗑️
+            </button>
+          </td>
+        </tr>
+        <tr *ngIf="proveedoresFiltrados.length === 0">
+          <td colspan="7" class="no-data">No hay proveedores registrados.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <ng-template #loadingTpl>
+    <p>Cargando proveedores...</p>
+  </ng-template>
+
+  <!-- Formulario crear/editar -->
+  <div class="form-card">
+    <h3>{{ modoEdicion ? 'Editar proveedor' : 'Crear nuevo proveedor' }}</h3>
+
+    <form (ngSubmit)="guardarProveedor()">
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="nombre">Nombre</label>
+          <input
+            id="nombre"
+            name="nombre"
+            type="text"
+            [(ngModel)]="form.nombre"
+            required
+            minlength="3"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="ciudad">Ciudad</label>
+          <select
+            id="ciudad"
+            name="idCiudad"
+            [(ngModel)]="form.idCiudad"
+            required
+          >
+            <option [ngValue]="null">Seleccione...</option>
+            <option *ngFor="let c of ciudades" [ngValue]="c.idCiudad">
+              {{ c.nombre }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="direccion">Dirección</label>
+          <input
+            id="direccion"
+            name="direccion"
+            type="text"
+            [(ngModel)]="form.direccion"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            [(ngModel)]="form.email"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="estado">Estado</label>
+          <select
+            id="estado"
+            name="estado"
+            [(ngModel)]="form.estado"
+            required
+          >
+            <option value="ACTIVO">ACTIVO</option>
+            <option value="INACTIVO">INACTIVO</option>
+          </select>
+        </div>
+
+        <!-- Teléfonos -->
+        <div class="form-group form-telefonos">
+          <label>Teléfonos</label>
+          <div class="telefono-input">
+            <input
+              type="text"
+              name="telefonoActual"
+              [(ngModel)]="form.telefonoActual"
+              placeholder="Agregar teléfono..."
+            />
+            <button type="button" class="btn btn-small" (click)="agregarTelefono()">
+              +
+            </button>
+          </div>
+          <div class="telefonos-list">
+            <span
+              class="tag removable"
+              *ngFor="let tel of form.telefonos; let i = index"
+            >
+              {{ tel }}
+              <button type="button" (click)="eliminarTelefono(i)">x</button>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">
+          {{ modoEdicion ? 'Actualizar' : 'Crear' }}
+        </button>
+        <button
+          *ngIf="modoEdicion"
+          type="button"
+          class="btn btn-secondary"
+          (click)="cancelarEdicion()"
+        >
+          Cancelar
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <p class="error" *ngIf="mensajeError">{{ mensajeError }}</p>
+</div>

@@ -1,1 +1,106 @@
-<p>impuestos works!</p>
+<div class="impuestos-page">
+  <h2>Impuestos</h2>
+
+  <!-- Buscador -->
+  <div class="search-row">
+    <div class="search-input">
+      <input
+        type="text"
+        placeholder="Buscar por nombre..."
+        [(ngModel)]="busqueda"
+        (keyup.enter)="aplicarFiltro()"
+      />
+    </div>
+    <button type="button" class="btn" (click)="aplicarFiltro()">Buscar</button>
+    <button
+      type="button"
+      class="btn btn-secondary"
+      *ngIf="busqueda"
+      (click)="limpiarFiltro()"
+    >
+      Limpiar
+    </button>
+  </div>
+
+  <!-- Tabla -->
+  <div class="table-card" *ngIf="!cargando; else loadingTpl">
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 80px">ID</th>
+          <th>Nombre</th>
+          <th style="width: 150px">Porcentaje</th>
+          <th style="width: 120px">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let imp of impuestosFiltrados">
+          <td>{{ imp.idImpuesto }}</td>
+          <td>{{ imp.nombre }}</td>
+          <td>{{ imp.porcentaje }} %</td>
+          <td class="acciones">
+            <button type="button" class="icon-btn" (click)="editar(imp)">✏️</button>
+            <button
+              type="button"
+              class="icon-btn delete"
+              (click)="eliminar(imp)"
+            >
+              🗑️
+            </button>
+          </td>
+        </tr>
+        <tr *ngIf="impuestosFiltrados.length === 0">
+          <td colspan="4" class="no-data">No hay impuestos registrados.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <ng-template #loadingTpl>
+    <p>Cargando impuestos...</p>
+  </ng-template>
+
+  <!-- Formulario crear/editar -->
+  <div class="form-card">
+    <h3>{{ modoEdicion ? 'Editar impuesto' : 'Crear nuevo impuesto' }}</h3>
+
+    <form (ngSubmit)="guardarImpuesto()">
+      <label for="nombre">Nombre</label>
+      <input
+        id="nombre"
+        name="nombre"
+        type="text"
+        [(ngModel)]="nombre"
+        required
+        minlength="2"
+      />
+
+      <label for="porcentaje">Porcentaje</label>
+      <input
+        id="porcentaje"
+        name="porcentaje"
+        type="number"
+        [(ngModel)]="porcentaje"
+        min="0"
+        step="0.01"
+        required
+      />
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">
+          {{ modoEdicion ? 'Actualizar' : 'Crear' }}
+        </button>
+        <button
+          *ngIf="modoEdicion"
+          type="button"
+          class="btn btn-secondary"
+          (click)="cancelarEdicion()"
+        >
+          Cancelar
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <p class="error" *ngIf="mensajeError">{{ mensajeError }}</p>
+</div>

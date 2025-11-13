@@ -2,11 +2,12 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { Impuesto } from '../models/impuesto.model';
+import { Compra } from '../models/compra.model';
+import { CompraRequest } from '../models/compra-request.model';
 
 @Injectable({ providedIn: 'root' })
-export class ImpuestosService {
-  private baseUrl = `${environment.apiUrl}/api/impuestos`;
+export class ComprasService {
+  private baseUrl = `${environment.apiUrl}/api/compras`;
 
   constructor(private http: HttpClient) {}
 
@@ -19,25 +20,25 @@ export class ImpuestosService {
     return headers;
   }
 
-  getImpuestos(): Observable<Impuesto[]> {
-    return this.http.get<Impuesto[]>(this.baseUrl, {
+  getCompras(): Observable<Compra[]> {
+    return this.http.get<Compra[]>(this.baseUrl, {
       headers: this.getAuthHeaders(),
     });
   }
 
-  createImpuesto(data: { nombre: string; porcentaje: number }): Observable<Impuesto> {
-    return this.http.post<Impuesto>(this.baseUrl, data, {
+  createCompra(req: CompraRequest): Observable<Compra> {
+    return this.http.post<Compra>(this.baseUrl, req, {
       headers: this.getAuthHeaders(),
     });
   }
 
-  updateImpuesto(id: number, data: { nombre: string; porcentaje: number }): Observable<Impuesto> {
-    return this.http.put<Impuesto>(`${this.baseUrl}/${id}`, data, {
+  updateCompra(id: number, req: CompraRequest): Observable<Compra> {
+    return this.http.put<Compra>(`${this.baseUrl}/${id}`, req, {
       headers: this.getAuthHeaders(),
     });
   }
 
-  deleteImpuesto(id: number): Observable<void> {
+  deleteCompra(id: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${id}`, {
       headers: this.getAuthHeaders(),
     });

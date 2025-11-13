@@ -3,6 +3,10 @@ import { LoginComponent } from './features/auth/login/login.component';
 import { PanelPrincipal } from './vista/panel/panel-principal/panel-principal';
 import { CategoriasComponent } from './vista/panel/categorias/categorias.component';
 import { ProductosComponent } from './vista/panel/productos/productos.component';
+import { CiudadesComponent } from './vista/panel/ciudades/ciudades.component';
+import { ProveedoresComponent } from './vista/panel/proveedores/proveedores.component';
+import { ImpuestosComponent } from './vista/panel/impuestos/impuestos.component';
+import { ComprasComponent } from './vista/panel/compras/compras.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -15,6 +19,10 @@ export const routes: Routes = [
     children: [
       { path: 'categorias', component: CategoriasComponent },
       { path: 'productos', component: ProductosComponent },
+      { path: 'ciudades', component: CiudadesComponent },
+      { path: 'proveedores', component: ProveedoresComponent },
+      { path: 'impuestos', component: ImpuestosComponent },
+      { path: 'compras', component: ComprasComponent },
       { path: '', redirectTo: 'categorias', pathMatch: 'full' },
     ],
   },

@@ -2,11 +2,11 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { Impuesto } from '../models/impuesto.model';
+import { Proveedor, ProveedorRequest } from '../models/proveedor.model';
 
 @Injectable({ providedIn: 'root' })
-export class ImpuestosService {
-  private baseUrl = `${environment.apiUrl}/api/impuestos`;
+export class ProveedoresService {
+  private baseUrl = `${environment.apiUrl}/api/proveedores`;
 
   constructor(private http: HttpClient) {}
 
@@ -19,25 +19,25 @@ export class ImpuestosService {
     return headers;
   }
 
-  getImpuestos(): Observable<Impuesto[]> {
-    return this.http.get<Impuesto[]>(this.baseUrl, {
+  getProveedores(): Observable<Proveedor[]> {
+    return this.http.get<Proveedor[]>(this.baseUrl, {
       headers: this.getAuthHeaders(),
     });
   }
 
-  createImpuesto(data: { nombre: string; porcentaje: number }): Observable<Impuesto> {
-    return this.http.post<Impuesto>(this.baseUrl, data, {
+  createProveedor(req: ProveedorRequest): Observable<Proveedor> {
+    return this.http.post<Proveedor>(this.baseUrl, req, {
       headers: this.getAuthHeaders(),
     });
   }
 
-  updateImpuesto(id: number, data: { nombre: string; porcentaje: number }): Observable<Impuesto> {
-    return this.http.put<Impuesto>(`${this.baseUrl}/${id}`, data, {
+  updateProveedor(id: number, req: ProveedorRequest): Observable<Proveedor> {
+    return this.http.put<Proveedor>(`${this.baseUrl}/${id}`, req, {
       headers: this.getAuthHeaders(),
     });
   }
 
-  deleteImpuesto(id: number): Observable<void> {
+  deleteProveedor(id: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${id}`, {
       headers: this.getAuthHeaders(),
     });

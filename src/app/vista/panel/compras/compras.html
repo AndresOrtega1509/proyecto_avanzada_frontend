@@ -1,1 +1,206 @@
-<p>compras works!</p>
+<div class="compras-page">
+  <h2>Compras</h2>
+
+  <!-- Buscador -->
+  <div class="search-row">
+    <div class="search-input">
+      <input
+        type="text"
+        placeholder="Buscar por proveedor o factura..."
+        [(ngModel)]="busqueda"
+        (keyup.enter)="aplicarFiltro()"
+      />
+    </div>
+    <button type="button" class="btn" (click)="aplicarFiltro()">Buscar</button>
+    <button
+      type="button"
+      class="btn btn-secondary"
+      *ngIf="busqueda"
+      (click)="limpiarFiltro()"
+    >
+      Limpiar
+    </button>
+  </div>
+
+  <!-- Tabla de compras -->
+  <div class="table-card" *ngIf="!cargando; else loadingTpl">
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 70px">ID</th>
+          <th>Fecha</th>
+          <th>N° Factura</th>
+          <th>Proveedor</th>
+          <th>Usuario</th>
+          <th>Total</th>
+          <th style="width: 120px">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let c of comprasFiltradas">
+          <td>{{ c.idCompra }}</td>
+          <td>{{ formatearFecha(c.fecha) }}</td>
+          <td>{{ c.numeroFactura }}</td>
+          <td>{{ c.proveedor.nombre }}</td>
+          <td>{{ c.usuario.nombre }}</td>
+          <td>{{ calcularTotalCompra(c) | currency: 'COP':'symbol-narrow' }}</td>
+          <td class="acciones">
+            <button type="button" class="icon-btn" (click)="editarCompra(c)">✏️</button>
+            <button type="button" class="icon-btn delete" (click)="eliminarCompra(c)">
+              🗑️
+            </button>
+          </td>
+        </tr>
+        <tr *ngIf="comprasFiltradas.length === 0">
+          <td colspan="7" class="no-data">No hay compras registradas.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <ng-template #loadingTpl>
+    <p>Cargando compras...</p>
+  </ng-template>
+
+  <!-- Formulario crear/editar compra -->
+  <div class="form-card">
+    <h3>{{ modoEdicion ? 'Editar compra' : 'Registrar nueva compra' }}</h3>
+
+    <form (ngSubmit)="guardarCompra()">
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="fecha">Fecha</label>
+          <input
+            id="fecha"
+            name="fecha"
+            type="date"
+            [(ngModel)]="form.fecha"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="numeroFactura">N° de factura</label>
+          <input
+            id="numeroFactura"
+            name="numeroFactura"
+            type="text"
+            [(ngModel)]="form.numeroFactura"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="proveedor">Proveedor</label>
+          <select
+            id="proveedor"
+            name="idProveedor"
+            [(ngModel)]="form.idProveedor"
+            required
+          >
+            <option [ngValue]="null">Seleccione...</option>
+            <option *ngFor="let p of proveedores" [ngValue]="p.idProveedor">
+              {{ p.nombre }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="usuario">Usuario (sesión actual)</label>
+          <select
+            id="usuario"
+            name="idUsuario"
+            [(ngModel)]="form.idUsuario"
+            disabled
+          >
+            <option [ngValue]="null">Seleccione...</option>
+            <option *ngFor="let u of usuarios" [ngValue]="u.idUsuario">
+              {{ u.nombre }} ({{ u.email }})
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Detalles de compra -->
+      <h4>Detalles de la compra</h4>
+
+      <div class="detalles-header">
+        <span>Producto</span>
+        <span>Cantidad</span>
+        <span>Precio</span>
+        <span>Subtotal</span>
+        <span>Acciones</span>
+      </div>
+
+      <div class="detalle-row" *ngFor="let det of detallesUI; let i = index">
+        <div class="col">
+          <select
+            name="producto-{{ i }}"
+            [(ngModel)]="det.idProducto"
+            (ngModelChange)="onCambiarProducto(det, $event)"
+            aria-label="Producto de la compra"
+          >
+            <option [ngValue]="null">Seleccione...</option>
+            <option *ngFor="let p of productos" [ngValue]="p.idProducto">
+              {{ p.nombre }}
+            </option>
+          </select>
+        </div>
+
+        <div class="col">
+          <input
+            type="number"
+            name="cantidad-{{ i }}"
+            [(ngModel)]="det.cantidad"
+            min="1"
+            aria-label="Cantidad del producto"
+            placeholder="Cant."
+          />
+        </div>
+
+        <div class="col precio">
+          {{ det.producto?.precio || 0 | currency: 'COP':'symbol-narrow' }}
+        </div>
+
+        <div class="col subtotal">
+          {{ calcularSubtotal(det) | currency: 'COP':'symbol-narrow' }}
+        </div>
+
+        <div class="col acciones-detalle">
+          <button
+            type="button"
+            class="icon-btn delete"
+            (click)="eliminarDetalle(i)"
+          >
+      🗑️
+          </button>
+        </div>
+  </div>
+
+      <button type="button" class="btn btn-secondary btn-add" (click)="agregarDetalle()">
+        + Agregar producto
+      </button>
+
+      <div class="total-row">
+        <span>Total (con impuestos):</span>
+        <span>{{ calcularTotalFormulario() | currency: 'COP':'symbol-narrow' }}</span>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">
+          {{ modoEdicion ? 'Actualizar compra' : 'Registrar compra' }}
+        </button>
+        <button
+          *ngIf="modoEdicion"
+          type="button"
+          class="btn btn-secondary"
+          (click)="cancelarEdicion()"
+        >
+          Cancelar
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <p class="error" *ngIf="mensajeError">{{ mensajeError }}</p>
+</div>
