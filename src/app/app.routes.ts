@@ -7,6 +7,8 @@ import { CiudadesComponent } from './vista/panel/ciudades/ciudades.component';
 import { ProveedoresComponent } from './vista/panel/proveedores/proveedores.component';
 import { ImpuestosComponent } from './vista/panel/impuestos/impuestos.component';
 import { ComprasComponent } from './vista/panel/compras/compras.component';
+import { DetalleComprasComponent } from './vista/panel/detalle-compras/detalle-compras';
+import { MarcasComponent } from './vista/panel/marcas/marcas';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -23,6 +25,8 @@ export const routes: Routes = [
       { path: 'proveedores', component: ProveedoresComponent },
       { path: 'impuestos', component: ImpuestosComponent },
       { path: 'compras', component: ComprasComponent },
+      { path: 'detalle-compras', component: DetalleComprasComponent },
+      { path: 'marcas', component: MarcasComponent },
       { path: '', redirectTo: 'categorias', pathMatch: 'full' },
     ],
   },

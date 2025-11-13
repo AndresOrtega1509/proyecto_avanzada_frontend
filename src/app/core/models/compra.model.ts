@@ -4,15 +4,16 @@ import { Producto } from './producto.model';
 
 export interface DetalleCompra {
   idDetalleCompra?: number;
-  producto: Producto;
+  producto?: Producto;
   cantidad: number;
+  subtotal?: number;
 }
 
 export interface Compra {
   idCompra?: number;
   fecha: string;
   numeroFactura: string;
-  proveedor: Proveedor;
-  usuario: Usuario;
+  proveedor: any;
+  usuario: any;
   detallesCompra: DetalleCompra[];
 }

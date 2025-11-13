@@ -13,4 +13,16 @@ export class MarcasService {
   getMarcas(): Observable<Marca[]> {
     return this.http.get<Marca[]>(this.baseUrl);
   }
+
+  createMarca(data: { nombre: string }): Observable<Marca> {
+    return this.http.post<Marca>(this.baseUrl, data);
+  }
+
+  updateMarca(id: number, data: { nombre: string }): Observable<Marca> {
+    return this.http.put<Marca>(`${this.baseUrl}/${id}`, data);
+  }
+
+  deleteMarca(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/${id}`);
+  }
 }

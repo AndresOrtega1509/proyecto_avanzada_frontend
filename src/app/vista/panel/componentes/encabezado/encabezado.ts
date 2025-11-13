@@ -17,7 +17,6 @@ export class Encabezado implements OnInit {
   ngOnInit(): void {
     const username = localStorage.getItem('username');
     if (username) {
-      // si quieres mostrar solo antes del @:
       const nombreCorto = username.split('@')[0];
       this.usuarioNombre = nombreCorto;
     }

@@ -140,9 +140,13 @@ export class ComprasComponent implements OnInit {
     if (!compra.detallesCompra) return 0;
 
     return compra.detallesCompra.reduce((acc, d) => {
+      // si no hay producto, ese detalle no suma
+      if (!d.producto) return acc;
+
       const base = d.producto.precio * d.cantidad;
       const porcentaje = d.producto.impuesto?.porcentaje ?? 0;
       const totalConImpuesto = base * (1 + porcentaje / 100);
+
       return acc + totalConImpuesto;
     }, 0);
   }
@@ -151,9 +155,11 @@ export class ComprasComponent implements OnInit {
   calcularTotalFormulario(): number {
     return this.detallesUI.reduce((acc, d) => {
       if (!d.producto || !d.cantidad) return acc;
+
       const base = d.producto.precio * d.cantidad;
       const porcentaje = d.producto.impuesto?.porcentaje ?? 0;
       const totalConImpuesto = base * (1 + porcentaje / 100);
+
       return acc + totalConImpuesto;
     }, 0);
   }

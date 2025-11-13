@@ -1,1 +1,137 @@
-<p>detalle-compras works!</p>
+<div class="detalle-compras-page">
+  <h2>Detalle de compras</h2>
+
+  <!-- Buscador -->
+  <div class="search-row">
+    <div class="search-input">
+      <input
+        type="text"
+        placeholder="Buscar por producto o factura..."
+        [(ngModel)]="busqueda"
+        (keyup.enter)="aplicarFiltro()"
+      />
+    </div>
+    <button type="button" class="btn" (click)="aplicarFiltro()">Buscar</button>
+    <button
+      type="button"
+      class="btn btn-secondary"
+      *ngIf="busqueda"
+      (click)="limpiarFiltro()"
+    >
+      Limpiar
+    </button>
+  </div>
+
+  <!-- Tabla -->
+  <div class="table-card" *ngIf="!cargando; else loadingTpl">
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 80px">ID Detalle</th>
+          <th>Compra</th>
+          <th>Producto</th>
+          <th style="width: 100px">Cantidad</th>
+          <th style="width: 150px">Subtotal</th>
+          <th style="width: 120px">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let d of detallesFiltrados">
+          <td>{{ d.idDetalleCompra }}</td>
+          <td>
+            <ng-container *ngIf="getCompraDeDetalle(d) as compra">
+              #{{ compra.idCompra }} - Fact. {{ compra.numeroFactura }}
+            </ng-container>
+          </td>
+          <td>{{ d.producto?.nombre }}</td>
+          <td>{{ d.cantidad }}</td>
+          <td>{{ d.subtotal || 0 | currency: 'COP':'symbol-narrow' }}</td>
+          <td class="acciones">
+            <button type="button" class="icon-btn" (click)="editar(d)">✏️</button>
+            <button type="button" class="icon-btn delete" (click)="eliminar(d)">
+              🗑️
+            </button>
+          </td>
+        </tr>
+        <tr *ngIf="detallesFiltrados.length === 0">
+          <td colspan="6" class="no-data">No hay detalles registrados.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <ng-template #loadingTpl>
+    <p>Cargando detalles...</p>
+  </ng-template>
+
+  <!-- Formulario -->
+  <div class="form-card">
+    <h3>{{ modoEdicion ? 'Editar detalle' : 'Crear nuevo detalle' }}</h3>
+
+    <form (ngSubmit)="guardar()">
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="compra">Compra</label>
+          <select
+            id="compra"
+            name="idCompra"
+            [(ngModel)]="form.idCompra"
+            required
+            aria-label="Compra del detalle"
+          >
+            <option [ngValue]="null">Seleccione...</option>
+            <option *ngFor="let c of compras" [ngValue]="c.idCompra">
+              #{{ c.idCompra }} - Fact. {{ c.numeroFactura }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="producto">Producto</label>
+          <select
+            id="producto"
+            name="idProducto"
+            [(ngModel)]="form.idProducto"
+            required
+            aria-label="Producto del detalle"
+          >
+            <option [ngValue]="null">Seleccione...</option>
+            <option *ngFor="let p of productos" [ngValue]="p.idProducto">
+              {{ p.nombre }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="cantidad">Cantidad</label>
+          <input
+            id="cantidad"
+            name="cantidad"
+            type="number"
+            min="1"
+            [(ngModel)]="form.cantidad"
+            required
+            aria-label="Cantidad del producto"
+            placeholder="Cantidad"
+          />
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">
+          {{ modoEdicion ? 'Actualizar detalle' : 'Crear detalle' }}
+        </button>
+        <button
+          *ngIf="modoEdicion"
+          type="button"
+          class="btn btn-secondary"
+          (click)="cancelar()"
+        >
+          Cancelar
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <p class="error" *ngIf="mensajeError">{{ mensajeError }}</p>
+</div>
