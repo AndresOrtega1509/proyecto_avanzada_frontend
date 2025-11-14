@@ -1,17 +1,18 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+
 import { ProductosService } from '../../../core/services/productos.service';
 import { CategoriasService } from '../../../core/services/categorias.service';
 import { MarcasService } from '../../../core/services/marcas.service';
-import { UnidadesMedidaService } from '../../../core/services/unidades-medida.service';
 import { ImpuestosService } from '../../../core/services/impuestos.service';
+import { UnidadesMedidaService } from '../../../core/services/unidades-medida.service';
 
 import { Producto, ProductoRequest } from '../../../core/models/producto.model';
 import { Categoria } from '../../../core/models/categoria.model';
 import { Marca } from '../../../core/models/marca.model';
-import { UnidadMedida } from '../../../core/models/unidad-medida.model';
 import { Impuesto } from '../../../core/models/impuesto.model';
+import { UnidadMedida } from '../../../core/models/unidad-medida.model';
 
 @Component({
   selector: 'app-productos',
@@ -26,8 +27,8 @@ export class ProductosComponent implements OnInit {
 
   categorias: Categoria[] = [];
   marcas: Marca[] = [];
-  unidadesMedida: UnidadMedida[] = [];
   impuestos: Impuesto[] = [];
+  unidadesMedida: UnidadMedida[] = [];
 
   busqueda = '';
   cargando = false;
@@ -40,11 +41,11 @@ export class ProductosComponent implements OnInit {
     nombre: string;
     idCategoria: number | null;
     idMarca: number | null;
-    idUnidadMedida: number | null;
-    cantidadUnidadesMedidas: number | null;
     idImpuesto: number | null;
-    precio: number | null;
-    stock: number | null;
+    idUnidadMedida: number | null;
+    cantidadUnidadesMedidas: number;
+    precio: number;
+    stock: number;
     estado: 'ACTIVO' | 'INACTIVO';
   } = this.getFormInicial();
 
@@ -52,12 +53,12 @@ export class ProductosComponent implements OnInit {
     private productosService: ProductosService,
     private categoriasService: CategoriasService,
     private marcasService: MarcasService,
-    private unidadesMedidaService: UnidadesMedidaService,
-    private impuestosService: ImpuestosService
+    private impuestosService: ImpuestosService,
+    private unidadesService: UnidadesMedidaService
   ) {}
 
   ngOnInit(): void {
-    this.cargarCombos();
+    this.cargarListas();
     this.cargarProductos();
   }
 
@@ -66,22 +67,35 @@ export class ProductosComponent implements OnInit {
       nombre: '',
       idCategoria: null,
       idMarca: null,
-      idUnidadMedida: null,
-      cantidadUnidadesMedidas: null,
       idImpuesto: null,
-      precio: null,
-      stock: null,
+      idUnidadMedida: null,
+      cantidadUnidadesMedidas: 1,
+      precio: 0,
+      stock: 0,
       estado: 'ACTIVO' as 'ACTIVO' | 'INACTIVO',
     };
   }
 
-  cargarCombos(): void {
-    this.categoriasService.getCategorias().subscribe((data) => (this.categorias = data));
-    this.marcasService.getMarcas().subscribe((data) => (this.marcas = data));
-    this.unidadesMedidaService
-      .getUnidadesMedida()
-      .subscribe((data) => (this.unidadesMedida = data));
-    this.impuestosService.getImpuestos().subscribe((data) => (this.impuestos = data));
+  cargarListas(): void {
+    this.categoriasService.getCategorias().subscribe({
+      next: (data) => (this.categorias = data),
+      error: (err) => console.error('Error al cargar categorías', err),
+    });
+
+    this.marcasService.getMarcas().subscribe({
+      next: (data) => (this.marcas = data),
+      error: (err) => console.error('Error al cargar marcas', err),
+    });
+
+    this.impuestosService.getImpuestos().subscribe({
+      next: (data) => (this.impuestos = data),
+      error: (err) => console.error('Error al cargar impuestos', err),
+    });
+
+    this.unidadesService.getUnidadesMedida().subscribe({
+      next: (data) => (this.unidadesMedida = data),
+      error: (err) => console.error('Error al cargar unidades de medida', err),
+    });
   }
 
   cargarProductos(): void {
@@ -105,7 +119,12 @@ export class ProductosComponent implements OnInit {
   aplicarFiltro(): void {
     const term = this.busqueda.trim().toLowerCase();
     this.productosFiltrados = term
-      ? this.productos.filter((p) => p.nombre.toLowerCase().includes(term))
+      ? this.productos.filter((p) => {
+          const nombre = p.nombre?.toLowerCase() ?? '';
+          const categoria = p.categoria?.nombre?.toLowerCase() ?? '';
+          const marca = p.marca?.nombre?.toLowerCase() ?? '';
+          return nombre.includes(term) || categoria.includes(term) || marca.includes(term);
+        })
       : [...this.productos];
   }
 
@@ -123,16 +142,19 @@ export class ProductosComponent implements OnInit {
   editar(producto: Producto): void {
     this.modoEdicion = true;
     this.productoSeleccionado = producto;
+
+    const esActivo = producto.estado === true || producto.estado === 'ACTIVO';
+
     this.form = {
       nombre: producto.nombre,
       idCategoria: producto.categoria?.idCategoria ?? null,
       idMarca: producto.marca?.idMarca ?? null,
-      idUnidadMedida: producto.unidadMedida?.idUnidadMedida ?? null,
-      cantidadUnidadesMedidas: producto.cantidadUnidadesMedidas ?? null,
       idImpuesto: producto.impuesto?.idImpuesto ?? null,
-      precio: producto.precio ?? null,
-      stock: producto.stock ?? null,
-      estado: (producto.estado as 'ACTIVO' | 'INACTIVO') ?? 'ACTIVO',
+      idUnidadMedida: producto.unidadMedida?.idUnidadMedida ?? null,
+      cantidadUnidadesMedidas: producto.cantidadUnidadesMedidas ?? 1,
+      precio: producto.precio ?? 0,
+      stock: producto.stock ?? 0,
+      estado: esActivo ? 'ACTIVO' : 'INACTIVO',
     };
   }
 
@@ -146,27 +168,31 @@ export class ProductosComponent implements OnInit {
       !this.form.idCategoria ||
       !this.form.idMarca ||
       !this.form.idUnidadMedida ||
-      this.form.cantidadUnidadesMedidas == null ||
-      this.form.precio == null ||
-      this.form.stock == null ||
       !this.form.idImpuesto
     ) {
-      this.mensajeError = 'Todos los campos son obligatorios.';
+      this.mensajeError = 'Nombre, categoría, marca, unidad, impuesto y stock son obligatorios.';
+      return;
+    }
+
+    if (this.form.stock < 0) {
+      this.mensajeError = 'El stock no puede ser negativo.';
       return;
     }
 
     this.mensajeError = '';
+
+    const estadoBool = this.form.estado === 'ACTIVO';
 
     const req: ProductoRequest = {
       nombre: this.form.nombre.trim(),
       idCategoria: this.form.idCategoria!,
       idMarca: this.form.idMarca!,
       idUnidadMedida: this.form.idUnidadMedida!,
-      cantidadUnidadesMedidas: this.form.cantidadUnidadesMedidas!,
+      cantidadUnidadesMedidas: this.form.cantidadUnidadesMedidas,
       idImpuesto: this.form.idImpuesto!,
-      precio: this.form.precio!,
-      stock: this.form.stock!,
-      estado: this.form.estado,
+      precio: this.form.precio,
+      stock: this.form.stock,
+      estado: estadoBool,
     };
 
     if (this.modoEdicion && this.productoSeleccionado?.idProducto != null) {
@@ -194,7 +220,7 @@ export class ProductosComponent implements OnInit {
     }
   }
 
-  eliminar(producto: Producto): void {
+  eliminarProducto(producto: Producto): void {
     if (!producto.idProducto) return;
 
     const confirmar = confirm(`¿Eliminar el producto "${producto.nombre}"?`);

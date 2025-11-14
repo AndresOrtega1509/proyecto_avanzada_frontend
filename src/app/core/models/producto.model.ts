@@ -1,16 +1,16 @@
 import { Categoria } from './categoria.model';
 import { Marca } from './marca.model';
-import { UnidadMedida } from './unidad-medida.model';
 import { Impuesto } from './impuesto.model';
+import { UnidadMedida } from './unidad-medida.model';
 
 export interface Producto {
   idProducto?: number;
   nombre: string;
-  categoria?: Categoria | null;
-  marca?: Marca | null;
-  unidadMedida?: UnidadMedida | null;
+  categoria: Categoria;
+  marca: Marca;
+  unidadMedida: UnidadMedida;
   cantidadUnidadesMedidas: number;
-  impuesto?: Impuesto | null;
+  impuesto: Impuesto;
   precio: number;
   stock: number;
   estado: boolean | string;
@@ -25,5 +25,5 @@ export interface ProductoRequest {
   idImpuesto: number;
   precio: number;
   stock: number;
-  estado: boolean | string;
+  estado: boolean;
 }

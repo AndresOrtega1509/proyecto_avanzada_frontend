@@ -45,7 +45,7 @@
           </td>
           <td>{{ d.producto?.nombre }}</td>
           <td>{{ d.cantidad }}</td>
-          <td>{{ d.subtotal || 0 | currency: 'COP':'symbol-narrow' }}</td>
+          <td>{{ calcularSubtotalFront(d) | currency:'COP':'symbol-narrow' }}</td>
           <td class="acciones">
             <button type="button" class="icon-btn" (click)="editar(d)">✏️</button>
             <button type="button" class="icon-btn delete" (click)="eliminar(d)">

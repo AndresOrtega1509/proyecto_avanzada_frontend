@@ -177,6 +177,11 @@ export class DetalleComprasComponent implements OnInit {
     }
   }
 
+  calcularSubtotalFront(detalle: DetalleCompra): number {
+    const precio = detalle.producto?.precio ?? 0;
+    return precio * detalle.cantidad;
+  }
+
   eliminar(detalle: DetalleCompra): void {
     if (!detalle.idDetalleCompra) return;
 

@@ -6,7 +6,7 @@
     <div class="search-input">
       <input
         type="text"
-        placeholder="Buscar por nombre..."
+        placeholder="Buscar por nombre, categoría o marca..."
         [(ngModel)]="busqueda"
         (keyup.enter)="aplicarFiltro()"
       />
@@ -31,6 +31,9 @@
           <th>Nombre</th>
           <th>Categoría</th>
           <th>Marca</th>
+          <th>Impuesto</th>
+          <th>Unidad</th>
+          <th>Cant. unidad</th>
           <th>Precio</th>
           <th>Stock</th>
           <th>Estado</th>
@@ -41,20 +44,32 @@
         <tr *ngFor="let p of productosFiltrados">
           <td>{{ p.idProducto }}</td>
           <td>{{ p.nombre }}</td>
-          <td>{{ p.categoria?.nombre }}</td>
-          <td>{{ p.marca?.nombre }}</td>
-          <td>{{ p.precio | currency: 'COP':'symbol-narrow' }}</td>
+          <td>{{ p.categoria.nombre }}</td>
+          <td>{{ p.marca.nombre }}</td>
+          <td>
+            <ng-container *ngIf="p.impuesto as imp">
+              {{ imp.nombre }} ({{ imp.porcentaje }}%)
+            </ng-container>
+            <span *ngIf="!p.impuesto">-</span>
+          </td>
+          <td>{{ p.unidadMedida.nombre }}</td>
+          <td>{{ p.cantidadUnidadesMedidas }}</td>
+          <td>{{ p.precio | currency:'COP':'symbol-narrow' }}</td>
           <td>{{ p.stock }}</td>
-          <td>{{ p.estado }}</td>
+          <td>{{ p.estado ? 'ACTIVO' : 'INACTIVO' }}</td>
           <td class="acciones">
             <button type="button" class="icon-btn" (click)="editar(p)">✏️</button>
-            <button type="button" class="icon-btn delete" (click)="eliminar(p)">
+            <button
+              type="button"
+              class="icon-btn delete"
+              (click)="eliminarProducto(p)"
+            >
               🗑️
             </button>
           </td>
         </tr>
         <tr *ngIf="productosFiltrados.length === 0">
-          <td colspan="8" class="no-data">No hay productos registrados.</td>
+          <td colspan="11" class="no-data">No hay productos registrados.</td>
         </tr>
       </tbody>
     </table>
@@ -78,7 +93,7 @@
             type="text"
             [(ngModel)]="form.nombre"
             required
-            minlength="3"
+            minlength="2"
           />
         </div>
 
@@ -113,6 +128,21 @@
         </div>
 
         <div class="form-group">
+          <label for="impuesto">Impuesto</label>
+          <select
+            id="impuesto"
+            name="idImpuesto"
+            [(ngModel)]="form.idImpuesto"
+            required
+          >
+            <option [ngValue]="null">Seleccione...</option>
+            <option *ngFor="let i of impuestos" [ngValue]="i.idImpuesto">
+              {{ i.nombre }} ({{ i.porcentaje }}%)
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
           <label for="unidad">Unidad de medida</label>
           <select
             id="unidad"
@@ -131,30 +161,15 @@
         </div>
 
         <div class="form-group">
-          <label for="cantidadUnidad">Cantidad por unidad</label>
+          <label for="cantUnidad">Cantidad por unidad</label>
           <input
-            id="cantidadUnidad"
+            id="cantUnidad"
             name="cantidadUnidadesMedidas"
             type="number"
-            [(ngModel)]="form.cantidadUnidadesMedidas"
             min="1"
+            [(ngModel)]="form.cantidadUnidadesMedidas"
             required
           />
-        </div>
-
-        <div class="form-group">
-          <label for="impuesto">Impuesto</label>
-          <select
-            id="impuesto"
-            name="idImpuesto"
-            [(ngModel)]="form.idImpuesto"
-            required
-          >
-            <option [ngValue]="null">Seleccione...</option>
-            <option *ngFor="let i of impuestos" [ngValue]="i.idImpuesto">
-              {{ i.nombre }} ({{ i.porcentaje }}%)
-            </option>
-          </select>
         </div>
 
         <div class="form-group">
@@ -163,21 +178,21 @@
             id="precio"
             name="precio"
             type="number"
-            [(ngModel)]="form.precio"
             min="0"
             step="0.01"
+            [(ngModel)]="form.precio"
             required
           />
         </div>
 
         <div class="form-group">
-          <label for="stock">Stock</label>
+          <label for="stock">Stock inicial</label>
           <input
             id="stock"
             name="stock"
             type="number"
-            [(ngModel)]="form.stock"
             min="0"
+            [(ngModel)]="form.stock"
             required
           />
         </div>
