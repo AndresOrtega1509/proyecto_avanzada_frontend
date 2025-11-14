@@ -86,7 +86,7 @@
                 "glob": "**/*",
                 "input": "public"
               },
-              "sistema-compras-angularsrcapp_redirects"
+              "sistema-compras-angular/src/app_redirects"
             ],
             "styles": [
               "src/styles.css"
