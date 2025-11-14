@@ -6,7 +6,7 @@ import { UnidadMedida } from '../models/unidad-medida.model';
 
 @Injectable({ providedIn: 'root' })
 export class UnidadesMedidaService {
-  private baseUrl = `${environment.apiUrl}/api/unidades-medida`;
+  private baseUrl = `${environment.SERVER_BACK}/api/unidades-medida`;
 
   constructor(private http: HttpClient) {}
 

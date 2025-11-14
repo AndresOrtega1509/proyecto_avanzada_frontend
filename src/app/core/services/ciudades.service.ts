@@ -6,7 +6,7 @@ import { Ciudad } from '../models/ciudad.model';
 
 @Injectable({ providedIn: 'root' })
 export class CiudadesService {
-  private baseUrl = `${environment.apiUrl}/api/ciudades`;
+  private baseUrl = `${environment.SERVER_BACK}/api/ciudades`;
 
   constructor(private http: HttpClient) {}
 

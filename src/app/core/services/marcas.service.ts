@@ -6,7 +6,7 @@ import { Marca } from '../models/marca.model';
 
 @Injectable({ providedIn: 'root' })
 export class MarcasService {
-  private baseUrl = `${environment.apiUrl}/api/marcas`;
+  private baseUrl = `${environment.SERVER_BACK}/api/marcas`;
 
   constructor(private http: HttpClient) {}
 

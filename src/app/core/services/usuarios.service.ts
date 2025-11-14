@@ -7,7 +7,7 @@ import { UsuarioRequest } from '../models/usuario-request.model';
 
 @Injectable({ providedIn: 'root' })
 export class UsuariosService {
-  private baseUrl = `${environment.apiUrl}/api/usuarios`;
+  private baseUrl = `${environment.SERVER_BACK}/api/usuarios`;
 
   constructor(private http: HttpClient) {}
 

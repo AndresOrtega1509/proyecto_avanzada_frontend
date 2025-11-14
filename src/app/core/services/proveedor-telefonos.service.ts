@@ -7,7 +7,7 @@ import { ProveedorTelefonoRequest } from '../models/proveedor-telefono-request.m
 
 @Injectable({ providedIn: 'root' })
 export class ProveedorTelefonosService {
-  private baseUrl = `${environment.apiUrl}/api/proveedores-telefonos`;
+  private baseUrl = `${environment.SERVER_BACK}/api/proveedores-telefonos`;
 
   constructor(private http: HttpClient) {}
 

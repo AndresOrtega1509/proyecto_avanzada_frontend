@@ -6,7 +6,7 @@ import { Rol } from '../models/rol.model';
 
 @Injectable({ providedIn: 'root' })
 export class RolesService {
-  private baseUrl = `${environment.apiUrl}/api/roles`;
+  private baseUrl = `${environment.SERVER_BACK}/api/roles`;
 
   constructor(private http: HttpClient) {}
 

@@ -7,7 +7,7 @@ import { CompraRequest } from '../models/compra-request.model';
 
 @Injectable({ providedIn: 'root' })
 export class ComprasService {
-  private baseUrl = `${environment.apiUrl}/api/compras`;
+  private baseUrl = `${environment.SERVER_BACK}/api/compras`;
 
   constructor(private http: HttpClient) {}
 

@@ -6,7 +6,7 @@ import { Impuesto } from '../models/impuesto.model';
 
 @Injectable({ providedIn: 'root' })
 export class ImpuestosService {
-  private baseUrl = `${environment.apiUrl}/api/impuestos`;
+  private baseUrl = `${environment.SERVER_BACK}/api/impuestos`;
 
   constructor(private http: HttpClient) {}
 
